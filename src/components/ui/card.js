@@ -1,8 +1,15 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 
-export const Card = ({ children, className }) => {
+export const Card = ({ children }) => {
   return (
-    <div className={`bg-gray-800 text-white rounded-lg shadow-xl ${className}`}>{children}</div>
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      className="max-w-lg mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-lg"
+    >
+      {children}
+    </motion.div>
   );
 };
 

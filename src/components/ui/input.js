@@ -1,10 +1,24 @@
-import React from 'react';
-
-export const Input = ({ className, ...props }) => {
+export const Input = ({ label, type = 'text', value, onChange, textarea, placeholder }) => {
   return (
-    <input
-      {...props}
-      className={`w-full px-4 py-2 border border-gray-700 rounded-md text-white bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 ${className}`}
-    />
+    <div>
+      <label className="block text-sm font-medium text-gray-300 mb-1">{label}</label>
+      {textarea ? (
+        <textarea
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:ring focus:ring-blue-500"
+          rows="4"
+        />
+      ) : (
+        <input
+          type={type}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:ring focus:ring-blue-500"
+        />
+      )}
+    </div>
   );
 };

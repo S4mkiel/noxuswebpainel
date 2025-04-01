@@ -4,7 +4,8 @@ import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
 import { Card, CardHeader, CardContent } from '../ui/card';
 import { motion } from 'framer-motion';
-import { CheckCircle, XCircle } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
+import { Alert } from '../ui/alert';
 
 const UpdateForm = () => {
   const [updateKey, setUpdateKey] = useState('');
@@ -12,10 +13,10 @@ const UpdateForm = () => {
   const [additionalInfo, setAdditionalInfo] = useState('');
   const [successMessage, setSuccessMessage] = useState(false);
   const [errorMessage, setErrorMessage] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!updateKey || !updatedItems.trim() || !additionalInfo.trim()) {
       setErrorMessage(true);
       setSuccessMessage(false);
@@ -23,8 +24,9 @@ const UpdateForm = () => {
       return;
     }
 
+    setLoading(true);
     const payload = {
-      content: '🌟 Uma nova atualização chegou!||@everyone||',
+      content: '🌟 Uma nova atualização chegou!! ||@everyone||',
       embeds: [
         {
           title: '🚀 Noxus Perfect World - Nova Atualização!',
@@ -91,14 +93,18 @@ const UpdateForm = () => {
 
       setSuccessMessage(true);
       setErrorMessage(false);
-      setTimeout(() => setSuccessMessage(false), 3000);
       setUpdateKey('');
       setUpdatedItems('');
       setAdditionalInfo('');
-    } catch (error) {
+    } catch {
       setErrorMessage(true);
       setSuccessMessage(false);
-      setTimeout(() => setErrorMessage(false), 3000);
+    } finally {
+      setLoading(false);
+      setTimeout(() => {
+        setSuccessMessage(false);
+        setErrorMessage(false);
+      }, 3000);
     }
   };
 
@@ -136,28 +142,13 @@ const UpdateForm = () => {
             <Button
               type="submit"
               className="w-full bg-blue-600 hover:bg-blue-700 transition-transform transform hover:-translate-y-1"
+              disabled={loading}
             >
-              🚀 Enviar Atualização
+              {loading ? <Loader2 className="animate-spin" /> : '🚀 Enviar Atualização'}
             </Button>
           </form>
-          {successMessage && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="mt-4 p-3 text-green-400 bg-green-900 rounded flex items-center"
-            >
-              <CheckCircle className="mr-2" /> Atualização enviada com sucesso!
-            </motion.div>
-          )}
-          {errorMessage && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="mt-4 p-3 text-red-400 bg-red-900 rounded flex items-center"
-            >
-              <XCircle className="mr-2" /> Erro ao enviar! Verifique os campos.
-            </motion.div>
-          )}
+          {successMessage && <Alert message="Atualização enviada com sucesso!" type="success" />}
+          {errorMessage && <Alert message="Erro ao enviar! Verifique os campos." type="error" />}
         </CardContent>
       </Card>
     </motion.div>
