@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel de Atualizações</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Arial', sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, #1e1e2f 0%, #2a2a4a 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .container {
+        background: #ffffff;
+        border-radius: 15px;
+        padding: 30px;
+        width: 100%;
+        max-width: 600px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        animation: fadeIn 0.5s ease;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      h1 {
+        text-align: center;
+        color: #2a2a4a;
+        margin-bottom: 20px;
+        font-size: 28px;
+        font-weight: 700;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        color: #333;
+        font-weight: 600;
+        margin-bottom: 8px;
+        font-size: 16px;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      input:focus,
+      textarea:focus {
+        border-color: #6a5acd;
+        box-shadow: 0 0 8px rgba(106, 90, 205, 0.3);
+        outline: none;
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 100px;
+      }
+
+      button {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(90deg, #6a5acd, #483d8b);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(106, 90, 205, 0.5);
+      }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      .success-message {
+        text-align: center;
+        color: #28a745;
+        font-weight: 600;
+        margin-top: 15px;
+        display: none;
+      }
+
+      .error-message {
+        text-align: center;
+        color: #dc3545;
+        font-weight: 600;
+        margin-top: 15px;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Painel de Atualizações</h1>
+      <form id="updateForm">
+        <div class="form-group">
+          <label for="updateKey">Atualização Chave</label>
+          <input type="text" id="updateKey" placeholder="Ex.: Patch 1.2.3" required />
+        </div>
+        <div class="form-group">
+          <label for="updatedItems">O que foi atualizado (uma por linha)</label>
+          <textarea
+            id="updatedItems"
+            placeholder="Ex.: Correção de bugs&#10;Novo recurso X"
+            required
+          ></textarea>
+        </div>
+        <div class="form-group">
+          <label for="additionalInfo">Informações Adicionais</label>
+          <textarea
+            id="additionalInfo"
+            placeholder="Ex.: Reiniciem o jogo para aplicar"
+            required
+          ></textarea>
+        </div>
+        <button type="submit">Enviar Atualização</button>
+      </form>
+      <div class="success-message" id="successMessage">Atualização enviada com sucesso!</div>
+      <div class="error-message" id="errorMessage">Erro ao enviar a atualização!</div>
+    </div>
+
+    <script>
+      document.getElementById('updateForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const updateKey = document.getElementById('updateKey').value;
+        const updatedItems = document
+          .getElementById('updatedItems')
+          .value.split('\n')
+          .filter((item) => item.trim());
+        const additionalInfo = document.getElementById('additionalInfo').value;
+
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+
+        try {
+          const response = await fetch('http://localhost:3000/api/send-update', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ updateKey, updatedItems, additionalInfo }),
+          });
+
+          if (!response.ok) throw new Error('Erro na API');
+
+          successMessage.style.display = 'block';
+          errorMessage.style.display = 'none';
+          setTimeout(() => (successMessage.style.display = 'none'), 3000); // Esconde após 3 segundos
+          document.getElementById('updateForm').reset();
+        } catch (error) {
+          console.error('Erro ao enviar:', error);
+          errorMessage.style.display = 'block';
+          successMessage.style.display = 'none';
+          setTimeout(() => (errorMessage.style.display = 'none'), 3000);
+        }
+      });
+    </script>
+  </body>
+</html>
